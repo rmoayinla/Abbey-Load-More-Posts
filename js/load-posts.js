@@ -9,12 +9,15 @@
 		showHideLoadButton();
 
 		$(document).on("click", ".load-more-btn", function(ev){
-			var postsToLoadData, popup, _this, responseData, popupContent; 
+			var postsToLoadData, popup, _this, responseData, popupContent, resultDiv; 
+			
 			postsToLoadData = {
 				query_vars: abbeyAjaxLoadPosts.query_vars, 
 				action: "abbey_load_more_posts",
 				nonce: abbeyAjaxLoadPosts.load_posts_nonce
 			}; 
+
+			resultDiv = $( ".archive-posts" );
 
 			if( $.magnificPopup ){
 				popup = $.magnificPopup.instance;
@@ -34,7 +37,9 @@
 						else{
 							currentPostPage++;
 							popup.close();
-							$( ".archive-posts" ).append( data );
+							resultDiv.append( data );
+							showHideLoadButton();
+							abbeyAjaxLoadPosts.query_vars.paged = currentPostPage;
 						}
 					},
 					error: function ( xhr, status, message){
@@ -59,11 +64,12 @@
 		}); //end on click .load-more-btn //
 		
 		function showHideLoadButton(){
-			if( currentPostPage < maxPostPage ){
+			var loadBtn = $( ".load-more-btn" ); 
+			if( loadBtn.length < 1 ){
 				$(".archive-content .pagination").after('<div class="load-more-btn">'+abbeyAjaxLoadPosts.btn_text+'</div>');
 			}
 			else{
-				$( ".load-more-btn" ).remove();
+				if( currentPostPage >= maxPostPage ) loadBtn.remove();
 			}
 		}
 		
