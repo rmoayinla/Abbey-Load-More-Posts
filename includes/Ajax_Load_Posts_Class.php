@@ -105,14 +105,14 @@ class Abbey_Ajax_Load_Posts{
 		 */
 		if( $more_posts->have_posts() ) : ?>
 			<!-- loop through the posts that are returned, this is the starting of the query loop -->
-			<?php while( $more_posts->have_posts() ) : $more_posts->the_post(); $count++ //increment the count //?>
+			<?php while( $more_posts->have_posts() ) : $more_posts->the_post(); $count++; //increment the count //?>
 
 				<!-- check if there is a template in the theme, if not the plugin template will be used -->
-				<?php if( locate_template( "templates/content-archive.php" ) ) : ?>
-					<?php $html .= get_template_part( "templates/content", "archive" ); ?>
+				<?php if( $template = locate_template( "templates/content-archive.php" ) ) : ?>
+					<?php $html .= load_template( $template, false ); ?>
 				
 				<?php else : ?>
-					<?php $html .= "there is no template"; ?>
+					<?php $html .= load_template( ABBEY_LOAD_POSTS_PLUGIN_DIR."partials/more-posts.php", false ); ?>
 
 				<?php endif; ?>
 
