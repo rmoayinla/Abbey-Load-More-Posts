@@ -23,3 +23,6 @@ require_once ABBEY_LOAD_POSTS_PLUGIN_DIR."bootstrap.php";
 
 if( class_exists( "Abbey_Ajax_Load_Posts" ) )
 	new Abbey_Ajax_Load_Posts();
+
+if( class_exists( "Abbey_Posts_Slider" ) )
+	new Abbey_Posts_Slider(); 
