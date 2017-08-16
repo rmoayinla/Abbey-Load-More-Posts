@@ -13,7 +13,11 @@
  	}
 
  	function archive_slide( $posts ){ 
+
  		if( empty( $posts ) || count( $posts ) < 2 ) return; ?>
+
+ 		if( empty( $posts ) ) return; ?>
+
 
  		 <?php
 
@@ -28,6 +32,6 @@
 
  	function load_posts(){
  		echo "<div>Post is now loaded</div>";
- 		wp_die();
+ 		die();
  	}
  }
