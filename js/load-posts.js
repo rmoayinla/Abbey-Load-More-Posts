@@ -22,7 +22,7 @@
 		maxPostPage = parseInt( abbeyAjaxLoadPosts.query_vars.max_num_pages );
 		
 		//simple function to show/hide the load more button, check below to see how it works//
-		showHideLoadButton();
+		if( maxPostPage > currentPostPage ) showHideLoadButton();
 
 		/**
 		 * Bind the AJAX request to the load more button 
