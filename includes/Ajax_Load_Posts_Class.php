@@ -102,9 +102,7 @@ class Abbey_Ajax_Load_Posts{
 		 */
 		$html = "";
 
-		/** 
-		 * check if the query returned any post 
-		 */
+		/** Check if the query returned any post */
 		if( $more_posts->have_posts() ) : ?>
 		
 			<!-- loop through the posts that are returned, this is the starting of the query loop -->
@@ -115,9 +113,10 @@ class Abbey_Ajax_Load_Posts{
 					<?php $html .= load_template( $template, false ); ?>
 				
 				<?php else : ?>
+					<!-- use the plugin template, check the partials folder for the file more-post.php -->
 					<?php $html .= load_template( ABBEY_LOAD_POSTS_PLUGIN_DIR."partials/more-posts.php", false ); ?>
 
-				<?php endif; ?>
+				<?php endif; //end if $template //?>
 
 			<?php endwhile; //end of loop //?>
 
@@ -130,9 +129,9 @@ class Abbey_Ajax_Load_Posts{
 
 		/**
 		 * terminate execution of anything else and return the function
-		 * this function is important when you are running in Ajax in wordpress 
+		 * this function is important when you are running an Ajax action in wordpress 
 		 */
-		die();
+		wp_die();
 	}
 
 	/**
@@ -147,6 +146,11 @@ class Abbey_Ajax_Load_Posts{
 		
 		wp_enqueue_script( "abbey-ajax-load-posts", ABBEY_LOAD_POSTS_PLUGIN_URL."js/load-posts.js", array( "jquery" ), 1.0, true );
 
+		/**
+		 * Some data objects that will be sent to the Javascript file load-posts.js
+		 * this Javascript object contains some vars for loadding the next posts e.g. no of post to load, ajax url
+		 * a nonce is added to the Javascript object to provide validation when the AJAX request is sent 
+		 */
 		wp_localize_script( "abbey-ajax-load-posts", "abbeyAjaxLoadPosts", 
 			array(
 				"ajax_url" => admin_url( "admin-ajax.php" ), 
