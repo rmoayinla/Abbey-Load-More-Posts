@@ -8,11 +8,11 @@ global $post_to_load;
 		</figure>
 
 		<div class="post-slide-body col-md-8">
-			<h4 class="post-slide-title"> <?php echo apply_filters( "the_title", $post_to_load->post_title ); ?></h4>
+			<h4 class="post-slide-title"> <?php the_title(); ?></h4>
 			<summary class="post-slide-excerpt"> 
-				<?php echo wp_trim_words( $post_to_load->post_content, 55, "..." ); ?>
+				<?php echo wp_trim_words( get_the_content(), 55, "..." ); ?>
 			</summary>
-			<a class="btn btn-link slick-add" href="#" data-post-id= "<?php echo $post_to_load->ID ?>">
+			<a class="btn btn-link slick-add" href="#" data-post-id= "<?php the_ID(); ?>">
 				<span class="glyphicon glyphicon-chevron-right"></span>
 			</a>
 			<a class="btn btn-link"><span class="glyphicon glyphicon-chevron-left"></span></a>
