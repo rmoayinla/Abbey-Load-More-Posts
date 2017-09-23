@@ -129,18 +129,23 @@
 	} //end if //
 
 	$(function(){
-		var currentSlide, postsSlides, nextpostIsLoading, slideTemplate;
+		var currentSlide, postsSlides, nextpostIsLoading, slideTemplate, excludeID;
 		postsSlides = $( ".posts-slides" );
 		currentSlide = 0;
 		nextpostIsLoading = false;
+		excludeID = []; //arrays of posts to exclude //
 		
 		$(document).on("click", ".slick-add", function(ev){
 			
 			ev.preventDefault(); //prevent the default event of this element //
 
-			var _this, postData, query_vars, ajax, newSlide; 
+			var _this, postData, query_vars, ajax, newSlide, i; 
 
 			_this = $(this); 
+
+			i = excludeID.length;
+			if( parseInt(i) < 1 ) i++;
+			excludeID[i] = _this.data( "postId" ); //add this post to list of post to exclude for next query//
 
 			if(currentSlide < 1) currentSlide = postsSlides.slick('slickCurrentSlide');
 			currentSlide++;
@@ -154,7 +159,9 @@
 	  			 
 	  			 postData = {
 	  			 	action: "abbey_archive_slide_posts", 
-	  			 	nonce: abbeyAjaxLoadPosts.load_posts_nonce
+	  			 	nonce: abbeyAjaxLoadPosts.load_posts_nonce, 
+	  			 	post_to_exclude: excludeID, 
+	  			 	slide_posts_query_vars: abbeyAjaxLoadPosts.query_vars
 	  			 };
 
 	  			 ajax = $.ajax({
