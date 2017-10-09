@@ -38,10 +38,9 @@ class Abbey_Ajax_Load_Posts{
 		 * if the check fails, a simple error message is displayed and execution is terminated 
 		 */
 		if( empty( $_POST[ "action" ] ) || $_POST[ "action" ] !== "abbey_load_more_posts" ){
-			echo sprintf( '<div class="ajax-error">%s</div>', 
+			$err_message = sprintf( '<div class="ajax-error">%s</div>', 
 							esc_html__( "Sorry, these posts can only be loaded through Ajax, kindly enable javascript in your browser, or try a different browser" )
 						 );
-			wp_die();
 		}
 
 		/**
@@ -50,13 +49,13 @@ class Abbey_Ajax_Load_Posts{
 		 * if the nonce check fails, a simple error message is sent and execution is terminated 
 		 */
 		if( empty( $_POST[ "nonce" ] ) || check_ajax_referer( 'abbey_load_more_posts', $_POST['nonce'], false ) ){
-			echo sprintf( '<div class="ajax-error">%s</div>', 
+			$err_message = sprintf( '<div class="ajax-error">%s</div>', 
 							esc_html__( "Cheating uh ... ??", "abbey-ajax-load-posts" ) 
 						);
-			// this return the function and stop execution //
-			wp_die();
 		}
 
+		if( !empty( $message ) ) wp_die( $message );// this return the function and stop execution //
+			
 		/**
 		 * check if the query_vars index is not set or empty in the $_POST global varible
 		 * if this query_vars is not present or empty, a simple error message is displayed and execution is terminated
