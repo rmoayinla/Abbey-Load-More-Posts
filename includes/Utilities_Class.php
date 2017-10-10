@@ -30,7 +30,7 @@ class Abbey_Load_Posts_Utilities{
 		global $wp_query;
 
 		/**
-		 * start copying what we need, the quer_vars, max_num_pages etc
+		 * start copying what we need, the query_vars, max_num_pages etc
 		 */
 		$query = $wp_query->query_vars;
 		$query[ "max_num_pages" ] = $wp_query->max_num_pages;
@@ -43,12 +43,12 @@ class Abbey_Load_Posts_Utilities{
 	/**
 	 * method to setup the args to how I really want to use it 
 	 * the query_args() methods return too many vars, and some of them are not needed in my custom query
-	 * this method filters out only the args I need which will be passed to the AJAX script to laod next posts 
+	 * this method filters out only the args I need which will be passed to the AJAX script to load next posts 
 	 *@return: (array) 		$query_args 		an array of filtered args that will be passed to Ajax script 
 	 */
 	static function setup_query_args(){
 		$args = self::query_args();
-		$query_args = "";
+		$query_args = [];
 			if( !empty( $args ) ){ 
 				$query_args[ "paged" ] = $args[ "paged" ] > 0 ? $args[ "paged" ] : 1;
 				$query_args[ "suppress_filters" ] = true;
@@ -63,7 +63,8 @@ class Abbey_Load_Posts_Utilities{
 				$query_args[ "max_num_pages" ] = $args[ "max_num_pages" ];
 					
 			}
-			return $query_args; 
+			//merge and replace query vars //
+			return wp_parse_args( $query_args, $args ); 
 	}
 
 }

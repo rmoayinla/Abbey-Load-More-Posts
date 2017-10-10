@@ -22,7 +22,7 @@
 		maxPostPage = parseInt( abbeyAjaxLoadPosts.query_vars.max_num_pages );
 		
 		//simple function to show/hide the load more button, check below to see how it works//
-		showHideLoadButton();
+		if( maxPostPage > currentPostPage ) showHideLoadButton();
 
 		/**
 		 * Bind the AJAX request to the load more button 
@@ -128,33 +128,79 @@
 
 	} //end if //
 
+	/**
+	 * Closure to run our slick carousel lazyloading of post 
+	 * post are queried from the db when the slick slide next button is clicked 
+	 * post are loaded via AJAX 
+	 */
 	$(function(){
-		var currentSlide, postsSlides, nextpostIsLoading, slideTemplate;
+		// variable containers for the slick slide lazyloading //
+		var currentSlide, postsSlides, nextpostIsLoading, slideTemplate, excludeID;
+
+		//element where the slick slide is initiated, this is slick carousel where loaded posts will be added //
 		postsSlides = $( ".posts-slides" );
+
+		//set default current slide, since we are on the first slide, set to 0 //
 		currentSlide = 0;
+
+		//indicator to know if an AJAX request is still on or finished //
 		nextpostIsLoading = false;
+
+		excludeID = []; //arrays of posts to exclude, will be sent together to AJAX  //
 		
-		$(document).on("click", ".slick-add", function(ev){
+		//attach a click event to the slic add button in our slide //
+		$(document).on("click", ".archive-post-slide .slick-add", function(ev){
 			
 			ev.preventDefault(); //prevent the default event of this element //
 
-			var _this, postData, query_vars, ajax, newSlide; 
+			// our variables //
+			var _this, postData, query_vars, ajax, newSlide, i; 
 
-			_this = $(this); 
+			_this = $(this); //clone the slick add button jQuery button //
 
+			i = excludeID.length; //get the count of the excludeID array //
+			
+			//if its less than 1, increment  //
+			if( parseInt(i) < 1 ) i++;
+
+			/**
+			 * Add the value of data-post-id to our excludeID array 
+			 * the ID of the current post in the slide is stored in the attribute data-post-id
+			 * this ID will be included in our array so that the next AJAX request does not query this post
+			 */
+			excludeID[i] = _this.data( "postId" ); //add this post to list of post to exclude for next query//
+
+			//kind of making sure the currentSlide indicator is up to date //
 			if(currentSlide < 1) currentSlide = postsSlides.slick('slickCurrentSlide');
+			
+			// increment our global variable currentSlide, continue below to know why we do this //
 			currentSlide++;
 
+			// a template to load while our AJAX request is still querying post //
 			slideTemplate = '<aside class="archive-post-slide"><div class="post-lazyload"><h4><span class="fa fa-spinner fa-spin fa-fw"></span><span class="loading-message">Loading post ...'+currentSlide+' </span></h4></div></aside>';
 
+	  		/** 
+	  		 * We will only 5 posts in our carousel, so we check the currentSlide to know if we should load AJAX
+	  		 * or we should just navigate to the next post 
+	  		 */
 	  		if( currentSlide < 5 ){
 	  			 postsSlides.slick('slickAdd', slideTemplate);
 	  			 postsSlides.slick('slickGoTo', currentSlide, false);
 	  			 newSlide = $("[data-slick-index='" +currentSlide+ "']");
 	  			 
+	  			 /**
+	  			  * Data that will be sent to wp admin ajax.php
+	  			  * this data will contain:
+	  			  *		action: an action name to be sent with the request, compulsory for wp ajax actions 
+	  			  * 	nonce: just a simple validation/authentication 
+	  			  *		posts_to_exclude: an array of posts to exclude for our request 
+	  			  * 	slide_posts_query_vars: array of query vars to use to load the next post 
+	  			  */
 	  			 postData = {
 	  			 	action: "abbey_archive_slide_posts", 
-	  			 	nonce: abbeyAjaxLoadPosts.load_posts_nonce
+	  			 	nonce: abbeyAjaxLoadPosts.load_posts_nonce, 
+	  			 	posts_to_exclude: excludeID, 
+	  			 	slide_posts_query_vars: abbeyAjaxLoadPosts.query_vars
 	  			 };
 
 	  			 ajax = $.ajax({
@@ -171,11 +217,12 @@
 
 	  		}
 	  		else{
-	  			postsSlides.slick("slickNext");
+	  			postsSlides.slick("slickNext"); //just go to the next slide without loading any AJAX request //
 	  		}
 
-		});
-	});
+		}); //end .click for .slick-add //
+
+	}); //end closure //
 		
 		
 	
