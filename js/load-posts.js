@@ -7,7 +7,7 @@
  */
 (function($){
 	
-	if( abbeyAjaxLoadPosts ){
+	if( !abbeyAjaxLoadPosts || typeof abbeyAjaxLoadPosts == "undefined" ) return false;
 
 		//initialize variables //
 		var postIsLoading, postLoadedCount, postPagesLoaded, currentPostPage, maxPostPage; 
@@ -115,7 +115,11 @@
 			}
 		}); //end on click .load-more-btn //
 		
-		function showHideLoadButton(){
+		
+
+	
+
+	function showHideLoadButton(){
 			var loadBtn = $( ".load-more-btn" ); 
 			if( loadBtn.length < 1 ){
 				$(".archive-content .navigation").append('<div class="load-more-btn">'+abbeyAjaxLoadPosts.btn_text+'</div>');
@@ -124,9 +128,7 @@
 				//check if we have load all pages or we are at the last page //
 				if( currentPostPage >= maxPostPage ) loadBtn.remove();
 			}
-		}//end function showHideLoadButton //
-
-	} //end if //
+	}//end function showHideLoadButton //
 
 	/**
 	 * Closure to run our slick carousel lazyloading of post 
