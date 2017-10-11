@@ -125,7 +125,7 @@ class Abbey_Ajax_Load_Posts{
 			
 		endif; 
 
-		echo $html;
+		echo $html; 
 
 		/**
 		 * terminate execution of anything else and return the function
