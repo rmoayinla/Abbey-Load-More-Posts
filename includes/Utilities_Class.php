@@ -34,6 +34,8 @@ class Abbey_Load_Posts_Utilities{
 		 */
 		$query = $wp_query->query_vars;
 		$query[ "max_num_pages" ] = $wp_query->max_num_pages;
+
+		if( isset( $query[ "nopaging" ] ) ) unset( $query[ "nopaging" ] );
 		
 		//return the query var //
 		return $query;
@@ -61,9 +63,10 @@ class Abbey_Load_Posts_Utilities{
 				$query_args[ "tag" ] = $args[ "tag" ]; 
 				$query_args[ "tag_id" ] = $args[ "tag_id" ];
 				$query_args[ "max_num_pages" ] = $args[ "max_num_pages" ];
+
 					
 			}
-			//merge and replace query vars //
+			//merge and replace the query vars and return it //
 			return wp_parse_args( $query_args, $args ); 
 	}
 
