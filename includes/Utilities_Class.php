@@ -35,6 +35,7 @@ class Abbey_Load_Posts_Utilities{
 		$query = $wp_query->query_vars;
 		$query[ "max_num_pages" ] = $wp_query->max_num_pages;
 
+		//remove nopaging index if set //
 		if( isset( $query[ "nopaging" ] ) ) unset( $query[ "nopaging" ] );
 		
 		//return the query var //
