@@ -79,7 +79,7 @@ class Abbey_Ajax_Load_Posts{
 		 * the paged index from $_POST is that of the last query, so we increment to load posts of next page 
 		 */
 		$args[ "paged" ] = (int) $args[ "paged" ]; 
-		$args[ "paged" ] = $args[ "paged" ] + 1;
+		if( empty( $_POST[ "use_page" ] ) || $_POST[ "use_page" ] == "false"  ) $args[ "paged" ] = $args[ "paged" ] + 1;
 
 		/**
 		 * setup the count variable, this just serves as a counter to number posts 
