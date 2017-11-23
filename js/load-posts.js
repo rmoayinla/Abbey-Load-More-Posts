@@ -23,21 +23,33 @@
 	maxPostPage = parseInt( abbeyAjaxLoadPosts.query_vars.max_num_pages );
 	
 	//simple function to show/hide the load more button, check below to see how it works//
-	if( maxPostPage > currentPostPage ) showHideLoadButton();
+	//if( maxPostPage > currentPostPage ) showHideLoadButton();
 
 	/**
 	 * Bind the AJAX request to the load more button 
 	 * This same event can be bind to the scroll event 
 	 * @since: 0.1 
 	 */
-	$(document).on("click", ".load-more-btn", function(ev){
+	$(document).on("click", ".load-more-btn, .page-numbers", function(ev){
 
 		//the element can be a link, so prevent the default action //
 		ev.preventDefault(); 
 
 		// initialize our variables //
-		var postsToLoadData, popup, _this, responseData, popupContent, resultDiv; 
+		var postsToLoadData, popup, _this, responseData, popupContent, resultDiv, paged; 
 		
+		// copy the Jquery $this object which represent the load-more button //
+		_this = $(this);
+		if( isPageNumbers( _this ) ){
+			$(".page-numbers").each(function(index){
+				var elem;
+				elem = $(this);
+				if( elem.hasClass( "next" ) ) paged = parseInt(abbeyAjaxLoadPosts.query_vars.paged) + 1;
+				else if( elem.hasClass( "prev" ) ) paged = parseInt(abbeyAjaxLoadPosts.query_vars.paged) - 1;
+				else paged = parseInt(index) + 1;
+			});
+			if( paged != "undefined" ) abbeyAjaxLoadPosts.query_vars.paged = paged;
+		}
 		/**
 		 * The datas that will be sent with our AJAX request 
 		 * this datas will be used in php for displaying/querying the post 
@@ -48,7 +60,8 @@
 		postsToLoadData = {
 			query_vars: abbeyAjaxLoadPosts.query_vars, // the query vars //
 			action: "abbey_load_more_posts", // for wp admin-ajax //
-			nonce: abbeyAjaxLoadPosts.load_posts_nonce //wp nonce for verification //
+			nonce: abbeyAjaxLoadPosts.load_posts_nonce, //wp nonce for verification //
+			use_page: paged || "false"
 		}; 
 
 		//where the results i.e. queried posts will be loaded //
@@ -66,8 +79,7 @@
 			// popup main content //
 			popupContent = popup.content;
 
-			// copy the Jquery $this object which represent the load-more button //
-			_this = $(this);
+			
 				
 			/**
 			 * Initiate our AJAx request with settings
@@ -89,7 +101,7 @@
 						currentPostPage++; //increment the currentPostPage //
 						popup.close(); //close the popup //
 						resultDiv.append( data );
-						showHideLoadButton(); //hide or show the load more button if there is or no more posts //
+						if( !isPageNumbers(_this) ) showHideLoadButton(); //hide or show the load more button if there is or no more posts //
 						abbeyAjaxLoadPosts.query_vars.paged = currentPostPage; //set the paged setting to the increment curent page for the next query //
 					}
 				},
@@ -130,6 +142,11 @@
 				if( currentPostPage >= maxPostPage ) loadBtn.remove();
 			}
 	}//end function showHideLoadButton //
+
+	function isPageNumbers( elem ){
+		if( elem.hasClass("page-numbers") ) return true;
+		return false;
+	}
 
 	/**
 	 * Closure to run our slick carousel lazyloading of post 
