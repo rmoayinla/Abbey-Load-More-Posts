@@ -11,7 +11,7 @@
 	if( !abbeyAjaxLoadPosts || typeof abbeyAjaxLoadPosts == "undefined" ) return false;
 
 	//initialize variables //
-	var postIsLoading, postLoadedCount, postPagesLoaded, currentPostPage, maxPostPage; 
+	var postIsLoading, postLoadedCount, postPagesLoaded, currentPostPage, maxPostPage, pageNumberLinks, allPageIsLoaded; 
 	
 	// simple indicator to determine when Ajax request have started or ended //
 	morePostIsLoading = false;
@@ -21,9 +21,14 @@
 
 	//copy the total pages in the archive from the global abbeyAjaxLoadPosts object //
 	maxPostPage = parseInt( abbeyAjaxLoadPosts.query_vars.max_num_pages );
+
+	//native pagination links i.e. a tags for navigating to archive pages //
+	pageNumberLinks = $(".page-numbers");
+
+	if( currentPostPage >= maxPostPage ) allPageIsLoaded = true;
 	
 	//simple function to show/hide the load more button, check below to see how it works//
-	//if( maxPostPage > currentPostPage ) showHideLoadButton();
+	if( !allPageIsLoaded && pageNumberLinks.length < 1 ) showHideLoadButton();
 
 	/**
 	 * Bind the AJAX request to the load more button 
@@ -35,13 +40,25 @@
 		//the element can be a link, so prevent the default action //
 		ev.preventDefault(); 
 
+		//bail if there is 
+		if( morePostIsLoading ) return false;
+
+		if( currentPostPage >= maxPostPage ) allPageIsLoaded = true;
+		
+		/** show alert when all posts is loaded and bail */
+		if(allPageIsLoaded){
+			alert( "All posts have been loaded!!!" );
+			return false;
+		}
+
 		// initialize our variables //
 		var postsToLoadData, popup, _this, responseData, popupContent, resultDiv, paged; 
 		
 		// copy the Jquery $this object which represent the load-more button //
 		_this = $(this);
+
 		if( isPageNumbers( _this ) ){
-			$(".page-numbers").each(function(index){
+			pageNumberLinks.each(function(index){
 				var elem;
 				elem = $(this);
 				if( elem.hasClass( "next" ) ) paged = parseInt(abbeyAjaxLoadPosts.query_vars.paged) + 1;
@@ -50,12 +67,14 @@
 			});
 			if( paged != "undefined" ) abbeyAjaxLoadPosts.query_vars.paged = paged;
 		}
+
 		/**
 		 * The datas that will be sent with our AJAX request 
 		 * this datas will be used in php for displaying/querying the post 
 		 * query_vars: contains the vars to query the next post e.g. paged, posts_per_page e.tc.
 		 * action: required if using wordpress admin-ajax.php to handle AJAX 
 		 * nonce: a simple verification to be sure the request is coming from the right source 
+		 * use_page: indicator for our server script to used the paged arg or increment it 
 		 */
 		postsToLoadData = {
 			query_vars: abbeyAjaxLoadPosts.query_vars, // the query vars //
@@ -79,7 +98,7 @@
 			// popup main content //
 			popupContent = popup.content;
 
-			
+
 				
 			/**
 			 * Initiate our AJAx request with settings
